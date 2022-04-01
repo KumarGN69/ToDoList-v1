@@ -1,16 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>ToDoList</title>
-	 <!-- custom css files  -->
-    <link rel="stylesheet" href="./stylesheets/styles.css">
-  </head>
-  <body>
-	  <div class="box", id="heading">
-		<h1 style="color: purple"><%= kindOfDay%> ToDo List</h1>	  
+//includes the header.ejs file
+
+<%-include("header")-%>
+
+// actual html layout
+<div class="box", id="heading">
+		<h1 style="color: purple"><%= listTitle%></h1>	  
 	  </div>
 	 
 	  <div class="box">
@@ -24,7 +18,7 @@
 	  	<%	} %>
 		<form class="item" action="/" method="POST">
 		  <input type="text" name="newItem" placeholder="New Item" autocomplete="off">
-		  <button type="Submit" name="button">+</button>
+		  <button type="Submit" name="list" value=<%=listTitle%>>+</button>
 	  	</form>
 	  </div>
 	
@@ -35,5 +29,6 @@
 	  
 	 
 	<!-- <script src="index.js"></script> -->
-  </body>
-</html>
+  
+//includes the footer.ejs file
+<%-include("footer")-%>

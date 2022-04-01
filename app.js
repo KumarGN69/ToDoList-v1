@@ -10,6 +10,7 @@ const app = express();
 
 //array to hold todo list items
 var listItems = [];
+var workItems = [];
 
 //setting the ejs view engine options in the express app
 app.set("view engine", "ejs");
@@ -34,16 +35,42 @@ app.get("/",function(req,res){
 	var day = today.toLocaleDateString("en-US",options);
 	// console.log(day);
 	
-	res.render("list",{kindOfDay:day, newListItems:listItems});
+	res.render("list",{listTitle:day, newListItems:listItems});
 });
 
-//route definition for POSt HTTP method
+//route definition for / POST route
 app.post("/", function(req, res){
+	// console.log(req.body);
+//implements conditional logic for checking the specific route or page/ layout
+// uses the action element name for the conditional check
+	if(req.body.list === "Work"){
+		
+		workItems.push(req.body.newItem);
+		res.redirect("/work");	
+	}else{
+		
+		listItems.push(req.body.newItem);
+		res.redirect("/");	
+	}
 	
-	listItems.push(req.body.newItem);
-	// console.log(listItem);
-	res.redirect("/");
+	
 });
+
+//event listener for work  GET route
+app.get("/work", function(req, res){
+	res.render("list",{listTitle:"Work List", newListItems:workItems});
+});
+
+//event listener for work  POST route
+app.post("/work", function(req, res){
+	
+	console.log(req.body.newItem);
+	workItems.push(req.body.newItem);
+	// console.log(listItem);
+	res.redirect("/work");
+});
+
+
 //event listener of expresse server
 app.listen(port, function(req,res){
 	console.log("Server started at port 3000!");
