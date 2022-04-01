@@ -16,7 +16,7 @@ app.set("view engine", "ejs");
 
 //setting the use of different nodeJS packages to use
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(express.static("public"))
+app.use(express.static("public"));
 
 
 //route definitions for GET HTTP method
@@ -32,7 +32,7 @@ app.get("/",function(req,res){
 	};
 	
 	var day = today.toLocaleDateString("en-US",options);
-	console.log(day);
+	// console.log(day);
 	
 	res.render("list",{kindOfDay:day, newListItems:listItems});
 });

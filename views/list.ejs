@@ -5,21 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>ToDoList</title>
-    <!-- <link rel="stylesheet" href="style.css"> -->
+	 <!-- custom css files  -->
+    <link rel="stylesheet" href="./stylesheets/styles.css">
   </head>
   <body>
-	  
-	 <h1 style="color: purple"><%= kindOfDay%> ToDo List</h1>
-	
-		<%  for (var i=0; i<newListItems.length; i++) { %>
-		 	 <li><%= newListItems[i] %></li>
+	  <div class="box", id="heading">
+		<h1 style="color: purple"><%= kindOfDay%> ToDo List</h1>	  
+	  </div>
+	 
+	  <div class="box">
+		  <%  for (var i=0; i<newListItems.length; i++) { %>
+		  <div class="item">
+			  <input type="checkbox">
+			 <p><%= newListItems[i] %></p> 
+		  </div>
+		 	 
 											   
 	  	<%	} %>
+		<form class="item" action="/" method="POST">
+		  <input type="text" name="newItem" placeholder="New Item" autocomplete="off">
+		  <button type="Submit" name="button">+</button>
+	  	</form>
+	  </div>
+	
+		
 	  
-	  <form action="/" method="POST">
-		  <input type="text" name="newItem">
-		  <button type="Submit" name="button">Add Item</button>
-	  </form>
+		
+	 
+	  
 	 
 	<!-- <script src="index.js"></script> -->
   </body>
