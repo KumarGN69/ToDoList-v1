@@ -4,13 +4,15 @@ const port = process.env.PORT || 3000;
 //require the needed npm packages
 const express = require("express");
 const bodyParser = require("body-parser");
+const date = require(__dirname + "/date.js");
 
-//creting an instance of express app
+// console.log(date());
+//creating an instance of express app
 const app = express();
 
 //array to hold todo list items
-var listItems = [];
-var workItems = [];
+const listItems = [];
+const workItems = [];
 
 //setting the ejs view engine options in the express app
 app.set("view engine", "ejs");
@@ -23,19 +25,9 @@ app.use(express.static("public"));
 //route definitions for GET HTTP method
 app.get("/",function(req,res){
 	
-	var today = new Date();
 	
-	var options ={
-		weekDay:"long",
-		day:"numeric",
-		month:"long",
-		year:"numeric"
-	};
 	
-	var day = today.toLocaleDateString("en-US",options);
-	// console.log(day);
-	
-	res.render("list",{listTitle:day, newListItems:listItems});
+	res.render("list",{listTitle:date.getDate(), newListItems:listItems});
 });
 
 //route definition for / POST route
@@ -64,7 +56,7 @@ app.get("/work", function(req, res){
 //event listener for work  POST route
 app.post("/work", function(req, res){
 	
-	console.log(req.body.newItem);
+	// console.log(req.body.newItem);
 	workItems.push(req.body.newItem);
 	// console.log(listItem);
 	res.redirect("/work");
