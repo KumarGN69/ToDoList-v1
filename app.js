@@ -21,13 +21,56 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
+//define the connection to mongoDB server
+const mongoose = require("mongoose");
+mongoose.connect("mongodb://localhost:27017/todolistDB");
+
+//define the DB schema for the collection of items
+const listSchema = new mongoose.Schema(
+	{
+		itemName:String
+	}
+);
+
+//define the collection
+const Item = mongoose.model("Item",listSchema);
+
+//define items for the collection
+const item1 = new Item({
+	itemName:"Welcome to do the Daily lIst"
+});
+
+const item2 = new Item({
+	itemName:"Review plans for the day"
+});
+
+const item3 = new Item({
+	itemName:"Create the list for the day!"
+});
+
+//define the defaulit items array
+const defaultItems =[item1,item2,item3];
+
+//define insert items to DB
+
+Item.insertMany(defaultItems, function(err){
+	if(err){
+		console.log("Update to DB failed :-(");
+	}else{
+		console.log("Update to DB successful :-)!");
+	}
+});
 
 //route definitions for GET HTTP method
 app.get("/",function(req,res){
 	
+	Item.find({},function(err,foundItems){
+		// console.log(foundItems);
+		// res.render("list",{listTitle:date.getDate(), newListItems:listItems});
+		res.render("list",{listTitle:date.getDate(), newListItems:foundItems});
+	});
 	
 	
-	res.render("list",{listTitle:date.getDate(), newListItems:listItems});
 });
 
 //route definition for / POST route
