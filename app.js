@@ -53,21 +53,26 @@ const defaultItems =[item1,item2,item3];
 
 //define insert items to DB
 
-Item.insertMany(defaultItems, function(err){
-	if(err){
-		console.log("Update to DB failed :-(");
-	}else{
-		console.log("Update to DB successful :-)!");
-	}
-});
+
 
 //route definitions for GET HTTP method
 app.get("/",function(req,res){
 	
 	Item.find({},function(err,foundItems){
-		// console.log(foundItems);
-		// res.render("list",{listTitle:date.getDate(), newListItems:listItems});
-		res.render("list",{listTitle:date.getDate(), newListItems:foundItems});
+		//insert default items only if the array is empty
+		if(foundItems.length == 0){
+			Item.insertMany(defaultItems, function(err){
+				if(err){
+					console.log("Update to DB failed :-(");
+				}else{
+					console.log("Update to DB successful :-)!");
+				}
+			});
+			res.redirect("/");
+		}else{
+			res.render("list",{listTitle:date.getDate(), newListItems:foundItems});	
+		}
+		
 	});
 	
 	
@@ -75,20 +80,25 @@ app.get("/",function(req,res){
 
 //route definition for / POST route
 app.post("/", function(req, res){
-	// console.log(req.body);
-//implements conditional logic for checking the specific route or page/ layout
-// uses the action element name for the conditional check
-	if(req.body.list === "Work"){
-		
-		workItems.push(req.body.newItem);
-		res.redirect("/work");	
-	}else{
-		
-		listItems.push(req.body.newItem);
-		res.redirect("/");	
-	}
+	//console.log(req.body.newItem);
+
+	const newItem = new Item({
+	itemName:req.body.newItem
+});
+	newItem.save();
+	res.redirect("/");
 	
-	
+});
+
+app.post("/delete",function(req,res){
+	console.log(req.body.checkbox);
+	Item.findByIdAndDelete(req.body.checkbox,function(err){
+		if(err){
+			console.log("could not delete");
+		}else{
+			res.redirect("/");
+		}
+	});
 });
 
 //event listener for work  GET route
