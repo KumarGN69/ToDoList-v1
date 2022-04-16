@@ -53,10 +53,17 @@ const defaultItems =[item1,item2,item3];
 
 //define insert items to DB
 
+const customListSchema = new mongoose.Schema({
+	name: String,
+	items:[listSchema]
+});
 
+const CustomToDoList = mongoose.model("customToDoList",customListSchema);
 
 //route definitions for GET HTTP method
 app.get("/",function(req,res){
+	// console.log(req.body.list);
+	// console.log(req.body.listTitle);
 	
 	Item.find({},function(err,foundItems){
 		//insert default items only if the array is empty
@@ -78,24 +85,66 @@ app.get("/",function(req,res){
 	
 });
 
+//definitions for custom routes for GET HTTP method
+app.get("/:customListName",function(req,res){
+	// console.log(req.params.customListName);
+	CustomToDoList.findOne({name:req.params.customListName},function(err,foundList){
+		if(!err){
+			if(!foundList){
+				console.log("Document does not exist");
+				const toDoList = new CustomToDoList({
+					name:req.params.customListName,
+					items:defaultItems
+				});
+				toDoList.save();
+				res.redirect("/"+req.params.customListName);
+			}else{
+				console.log("Document exists!");
+				console.log(foundList);
+				res.render("list",{listTitle:foundList.name, newListItems:foundList.items});
+			}
+		}
+		});
+	
+	
+});
 //route definition for / POST route
 app.post("/", function(req, res){
-	//console.log(req.body.newItem);
-
+	
+	const itemName = req.body.newItem;
+	const listName = req.body.list;
+	// console.log(itemName);
+	// console.log(listName);
+	
 	const newItem = new Item({
-	itemName:req.body.newItem
-});
-	newItem.save();
-	res.redirect("/");
+		itemName:req.body.newItem
+		});
+	
+	if(req.body.list === date.getDate()){
+		console.log("I am here!");
+		newItem.save();
+		res.redirect("/");	
+	}else{
+		CustomToDoList.findOne({name:req.body.list},function(err,foundList){
+			console.log(foundList);
+			foundList.items.push(newItem);
+			foundList.save();
+			res.redirect("/"+req.body.list);
+		});
+			
+	}
+	
 	
 });
 
 app.post("/delete",function(req,res){
-	console.log(req.body.checkbox);
+	// console.log(req.body.checkbox);
+	
 	Item.findByIdAndDelete(req.body.checkbox,function(err){
 		if(err){
 			console.log("could not delete");
 		}else{
+			
 			res.redirect("/");
 		}
 	});
