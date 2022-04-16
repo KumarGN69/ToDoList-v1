@@ -6,6 +6,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const date = require(__dirname + "/date.js");
 
+const _ = require("lodash");
+
 // console.log(date());
 //creating an instance of express app
 const app = express();
@@ -62,8 +64,6 @@ const CustomToDoList = mongoose.model("customToDoList",customListSchema);
 
 //route definitions for GET HTTP method
 app.get("/",function(req,res){
-	// console.log(req.body.list);
-	// console.log(req.body.listTitle);
 	
 	Item.find({},function(err,foundItems){
 		//insert default items only if the array is empty
@@ -87,20 +87,25 @@ app.get("/",function(req,res){
 
 //definitions for custom routes for GET HTTP method
 app.get("/:customListName",function(req,res){
-	// console.log(req.params.customListName);
-	CustomToDoList.findOne({name:req.params.customListName},function(err,foundList){
+	
+	//get the custom list name from the url parameters
+	//use lodash capitalize method for Normalizing the naming conventions
+	//and taking out case sensitivity based duplication
+	const customListName = _.capitalize(req.params.customListName);
+	
+	//if the custom list name is not found in the DB create one else use existing
+	CustomToDoList.findOne({name:customListName},function(err,foundList){
 		if(!err){
 			if(!foundList){
-				console.log("Document does not exist");
+				
 				const toDoList = new CustomToDoList({
-					name:req.params.customListName,
+					name:customListName,
 					items:defaultItems
 				});
 				toDoList.save();
 				res.redirect("/"+req.params.customListName);
 			}else{
-				console.log("Document exists!");
-				console.log(foundList);
+				
 				res.render("list",{listTitle:foundList.name, newListItems:foundList.items});
 			}
 		}
@@ -120,6 +125,8 @@ app.post("/", function(req, res){
 		itemName:req.body.newItem
 		});
 	
+	//If the ToDolist is default the same the added newItem
+	//else find the relevant customList and push the new item onto that list
 	if(req.body.list === date.getDate()){
 		console.log("I am here!");
 		newItem.save();
@@ -138,9 +145,15 @@ app.post("/", function(req, res){
 });
 
 app.post("/delete",function(req,res){
-	// console.log(req.body.checkbox);
+	// assigning the parsed values from EJS template to the variables
+	const listName = req.body.listName;
+	const itemName = req.body.newItem;
 	
-	Item.findByIdAndDelete(req.body.checkbox,function(err){
+	
+	//If the ToDolist is default the delete the checked item
+	//else find the relevant customList and delete checked item from that list
+	if(listName == date.getDate()){
+		Item.findByIdAndDelete(req.body.checkbox,function(err){
 		if(err){
 			console.log("could not delete");
 		}else{
@@ -148,6 +161,18 @@ app.post("/delete",function(req,res){
 			res.redirect("/");
 		}
 	});
+	}else{
+		const query = {name:listName};
+		const options ={$pull:{items:{_id:req.body.checkbox}}};
+		CustomToDoList.findOneAndUpdate(query ,options, function(err,foundList){
+			if(!err){
+				// redirect for rendering the custom list post updates. 
+				res.redirect("/"+listName);
+			}
+			
+		});
+	}
+	
 });
 
 //event listener for work  GET route
