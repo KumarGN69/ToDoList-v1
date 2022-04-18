@@ -25,7 +25,7 @@ app.use(express.static("public"));
 
 //define the connection to mongoDB server
 const mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost:27017/todolistDB");
+mongoose.connect("mongodb+srv://admin-kumargn:Gnk69%40Jay73@cluster0.vpzxn.mongodb.net/todolistDB");
 
 //define the DB schema for the collection of items
 const listSchema = new mongoose.Schema(
