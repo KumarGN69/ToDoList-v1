@@ -1,5 +1,11 @@
 //port for app to listen
-const port = process.env.PORT || 3000;
+// const port = process.env.PORT || 3000;
+
+let port = process.env.PORT;
+if (port == null || port == "") {
+  port = 8000;
+}
+
 
 //require the needed npm packages
 const express = require("express");

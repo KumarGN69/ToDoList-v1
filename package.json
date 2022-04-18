@@ -63,6 +63,9 @@
   },
   "author": "Kumar GN",
   "license": "ISC",
+	"engines": {
+    "node": "16.14.2"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/KumarGN69/ToDoList-v1.git"
